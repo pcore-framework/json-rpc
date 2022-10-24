@@ -6,6 +6,8 @@ namespace PCore\JsonRpc;
 
 use ArrayAccess;
 use BadMethodCallException;
+use PCore\HttpMessage\Contracts\HeaderInterface;
+use PCore\HttpMessage\Response as PsrResponse;
 use PCore\JsonRpc\Message\Request;
 use PCore\Utils\Arr;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
@@ -31,6 +33,10 @@ class Server
             throw new BadMethodCallException('Метод не найден', -32601);
         }
         print_r($service);
+        $psrResponse = new PsrResponse();
+        $psrResponse = $psrResponse
+            ->withHeader(HeaderInterface::HEADER_CONTENT_TYPE, 'application/json; charset=utf-8');
+        return $psrResponse;
     }
 
     /**
