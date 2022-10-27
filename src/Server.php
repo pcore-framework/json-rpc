@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use PCore\Di\Reflection;
 use PCore\HttpMessage\Contracts\HeaderInterface;
 use PCore\HttpMessage\Response as PsrResponse;
+use PCore\HttpMessage\Stream\StandardStream;
 use PCore\JsonRpc\Message\Request;
 use PCore\Utils\Arr;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
@@ -39,10 +40,11 @@ class Server
         if (is_null($service = $this->getService($rpcRequest->getMethod()))) {
             throw new BadMethodCallException('Метод не найден', -32601);
         }
-        print_r($service);
+        $result = call($service, $rpcRequest->getParams());
         $psrResponse = new PsrResponse();
         $psrResponse = $psrResponse
-            ->withHeader(HeaderInterface::HEADER_CONTENT_TYPE, 'application/json; charset=utf-8');
+            ->withHeader(HeaderInterface::HEADER_CONTENT_TYPE, 'application/json; charset=utf-8')
+            ->withBody(StandardStream::create(json_encode(['result' => $result])));
         return $psrResponse;
     }
 

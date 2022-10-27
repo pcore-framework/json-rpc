@@ -17,7 +17,10 @@ use Psr\Http\Message\ServerRequestInterface;
 class Request implements JsonSerializable
 {
 
-    public function __construct(protected string $method)
+    public function __construct(
+        protected string $method,
+        protected array  $params = []
+    )
     {
     }
 
@@ -40,7 +43,7 @@ class Request implements JsonSerializable
         }
         $body = $request->getBody()->getContents();
         $parts = json_decode($body, true);
-        return new static($parts['method']);
+        return new static($parts['method'], $parts['params'] ?? []);
     }
 
     /**
@@ -49,6 +52,14 @@ class Request implements JsonSerializable
     public function getMethod(): string
     {
         return $this->method;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
     }
 
 }
