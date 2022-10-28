@@ -19,7 +19,9 @@ class Request implements JsonSerializable
 
     public function __construct(
         protected string $method,
-        protected array  $params = []
+        protected string $jsonRpc = '2.0',
+        protected array  $params = [],
+        protected mixed  $id = null
     )
     {
     }
@@ -43,7 +45,7 @@ class Request implements JsonSerializable
         }
         $body = $request->getBody()->getContents();
         $parts = json_decode($body, true);
-        return new static($parts['method'], $parts['params'] ?? []);
+        return new static($parts['method'], $parts['jsonrpc'], $parts['params'] ?? [], $parts['id'] ?? null);
     }
 
     /**
@@ -55,11 +57,36 @@ class Request implements JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getJsonRpc(): string
+    {
+        return $this->jsonRpc;
+    }
+
+    /**
      * @return array
      */
     public function getParams(): array
     {
         return $this->params;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasId(): bool
+    {
+        return isset($this->id);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId(): mixed
+    {
+        return $this->id;
+    }
+
 
 }

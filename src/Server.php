@@ -13,6 +13,7 @@ use PCore\HttpMessage\Response as PsrResponse;
 use PCore\HttpMessage\Stream\StandardStream;
 use PCore\JsonRpc\Message\Request;
 use PCore\Utils\Arr;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
 use ReflectionException;
 use ReflectionMethod;
@@ -33,6 +34,8 @@ class Server
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
+     * @throws ReflectionException
+     * @throws ContainerExceptionInterface
      */
     public function http(ServerRequestInterface $request): ResponseInterface
     {
@@ -42,9 +45,15 @@ class Server
         }
         $result = call($service, $rpcRequest->getParams());
         $psrResponse = new PsrResponse();
-        $psrResponse = $psrResponse
-            ->withHeader(HeaderInterface::HEADER_CONTENT_TYPE, 'application/json; charset=utf-8')
-            ->withBody(StandardStream::create(json_encode(['result' => $result])));
+        if ($rpcRequest->hasId()) {
+            $psrResponse = $psrResponse
+                ->withHeader(HeaderInterface::HEADER_CONTENT_TYPE, 'application/json; charset=utf-8')
+                ->withBody(StandardStream::create(json_encode([
+                    'jsonrpc' => $rpcRequest->getJsonRpc(),
+                    'result' => $result,
+                    'id' => $rpcRequest->getId()
+                ])));
+        }
         return $psrResponse;
     }
 
