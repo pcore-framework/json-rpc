@@ -88,5 +88,13 @@ class Request implements JsonSerializable
         return $this->id;
     }
 
+    /**
+     * @param mixed $id
+     * @return void
+     */
+    public function setId(mixed $id): void
+    {
+        $this->id = $id;
+    }
 
 }

@@ -20,7 +20,8 @@
     "require": {
         "php": "^8.0",
         "pcore/di": "v1.5.*",
-        "pcore/http-message": "v1.5.*"
+        "pcore/http-message": "v1.5.*",
+        "guzzlehttp/guzzle": "^7.5"
     },
     "autoload": {
         "psr-4": {
