@@ -17,7 +17,12 @@ use Psr\Http\Message\ResponseInterface;
 class Response implements JsonSerializable
 {
 
-    public function __construct(protected mixed $result)
+    public function __construct(
+        protected mixed  $result,
+        protected mixed  $id,
+        protected ?Error $error = null,
+        protected string $jsonRpc = '2.0',
+    )
     {
     }
 
@@ -49,6 +54,30 @@ class Response implements JsonSerializable
     public function getResult(): mixed
     {
         return $this->result;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJsonRpc(): string
+    {
+        return $this->jsonRpc;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId(): mixed
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return Error|null
+     */
+    public function getError(): ?Error
+    {
+        return $this->error;
     }
 
 }

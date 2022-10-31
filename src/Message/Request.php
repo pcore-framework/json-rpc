@@ -45,6 +45,9 @@ class Request implements JsonSerializable
         }
         $body = $request->getBody()->getContents();
         $parts = json_decode($body, true);
+        if (!isset($parts['jsonrpc'], $parts['method'])) {
+            throw new InvalidArgumentException('Ошибка синтаксического анализа', -32700);
+        }
         return new static($parts['method'], $parts['jsonrpc'], $parts['params'] ?? [], $parts['id'] ?? null);
     }
 
@@ -57,6 +60,15 @@ class Request implements JsonSerializable
     }
 
     /**
+     * @param string $method
+     * @return void
+     */
+    public function setMethod(string $method): void
+    {
+        $this->method = $method;
+    }
+
+    /**
      * @return string
      */
     public function getJsonRpc(): string
@@ -65,11 +77,29 @@ class Request implements JsonSerializable
     }
 
     /**
+     * @param string $jsonRpc
+     * @return void
+     */
+    public function setJsonRpc(string $jsonRpc): void
+    {
+        $this->jsonRpc = $jsonRpc;
+    }
+
+    /**
      * @return array
      */
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @param array $params
+     * @return void
+     */
+    public function setParams(array $params): void
+    {
+        $this->params = $params;
     }
 
     /**
