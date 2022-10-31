@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PCore\JsonRpc;
 
 use PCore\Aop\Collectors\AbstractCollector;
-use PCore\JsonRpc\Attribute\RpcService;
+use PCore\JsonRpc\Attributes\RpcService;
 use Psr\Container\ContainerExceptionInterface;
 use ReflectionException;
 

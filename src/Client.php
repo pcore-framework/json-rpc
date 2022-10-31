@@ -7,7 +7,7 @@ namespace PCore\JsonRpc;
 use Exception;
 use GuzzleHttp\Client as GzClient;
 use GuzzleHttp\Exception\GuzzleException;
-use PCore\JsonRpc\Message\{Request, Response};
+use PCore\JsonRpc\Messages\{Request, Response};
 use Psr\Http\Message\ResponseInterface;
 
 /**

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace PCore\JsonRpc\Message;
+namespace PCore\JsonRpc\Messages;
 
 use JsonSerializable;
 use function get_object_vars;
 
 /**
  * Class Error
- * @package PCore\JsonRpc\Message
+ * @package PCore\JsonRpc\Messages
  * @github https://github.com/pcore-framework/json-rpc
  */
 class Error implements JsonSerializable

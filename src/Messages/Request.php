@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PCore\JsonRpc\Message;
+namespace PCore\JsonRpc\Messages;
 
 use InvalidArgumentException;
 use JsonSerializable;
@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class Request
- * @package PCore\JsonRpc\Message
+ * @package PCore\JsonRpc\Messages
  * @github https://github.com/pcore-framework/json-rpc
  */
 class Request implements JsonSerializable

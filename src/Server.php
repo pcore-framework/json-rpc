@@ -11,7 +11,7 @@ use PCore\Di\Reflection;
 use PCore\HttpMessage\Contracts\HeaderInterface;
 use PCore\HttpMessage\Response as PsrResponse;
 use PCore\HttpMessage\Stream\StandardStream;
-use PCore\JsonRpc\Message\Request;
+use PCore\JsonRpc\Messages\Request;
 use PCore\Utils\Arr;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
