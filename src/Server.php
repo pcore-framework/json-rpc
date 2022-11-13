@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace PCore\JsonRpc;
 
-use ArrayAccess;
 use BadMethodCallException;
 use InvalidArgumentException;
 use PCore\Di\Reflection;
 use PCore\HttpMessage\Contracts\HeaderInterface;
 use PCore\HttpMessage\Response as PsrResponse;
 use PCore\HttpMessage\Stream\StandardStream;
-use PCore\JsonRpc\Messages\Request;
+use PCore\JsonRpc\Messages\{Error, Request, Response as RpcResponse};
 use PCore\Utils\Arr;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
 use ReflectionException;
 use ReflectionMethod;
+use Throwable;
 
 /**
  * Class Server
@@ -34,32 +33,51 @@ class Server
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
-     * @throws ReflectionException
-     * @throws ContainerExceptionInterface
      */
     public function http(ServerRequestInterface $request): ResponseInterface
     {
-        $rpcRequest = Request::createFromPsrRequest($request);
-        if (is_null($service = $this->getService($rpcRequest->getMethod()))) {
-            throw new BadMethodCallException('Метод не найден', -32601);
-        }
-        $result = call($service, $rpcRequest->getParams());
-        $psrResponse = new PsrResponse();
-        if ($rpcRequest->hasId()) {
-            $psrResponse = $psrResponse
-                ->withHeader(HeaderInterface::HEADER_CONTENT_TYPE, 'application/json; charset=utf-8')
-                ->withBody(StandardStream::create(json_encode([
+        try {
+            $rpcRequest = Request::createFromPsrRequest($request);
+            if (is_null($service = $this->getService($rpcRequest->getMethod()))) {
+                throw new BadMethodCallException('Метод не найден', -32601);
+            }
+            $result = call($service, $rpcRequest->getParams());
+            $psrResponse = new PsrResponse();
+            if ($rpcRequest->hasId()) {
+                $psrResponse = $psrResponse->withHeader(
+                    HeaderInterface::HEADER_CONTENT_TYPE,
+                    'application/json; charset=utf-8'
+                )->withBody(StandardStream::create(json_encode([
                     'jsonrpc' => $rpcRequest->getJsonRpc(),
                     'result' => $result,
                     'id' => $rpcRequest->getId()
                 ])));
+            }
+            return $psrResponse;
+        } catch (Throwable $e) {
+            $psrResponse = new PsrResponse();
+            if (!isset($rpcRequest) || ($rpcRequest->hasId())) {
+                $rpcResponse = new RpcResponse(
+                    null,
+                    isset($rpcRequest) ? $rpcRequest->getId() : null,
+                    new Error($e->getCode(), $e->getMessage(), [
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTrace()
+                    ])
+                );
+                $psrResponse = $psrResponse->withHeader(
+                    HeaderInterface::HEADER_CONTENT_TYPE,
+                    'application/json; charset=utf-8'
+                )->withBody(StandardStream::create(json_encode($rpcResponse, JSON_UNESCAPED_UNICODE)));
+            }
+            return $psrResponse;
         }
-        return $psrResponse;
     }
 
     /**
      * @param string $name
-     * @return array|ArrayAccess|mixed
+     * @return mixed
      */
     protected function getService(string $name): mixed
     {

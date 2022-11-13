@@ -16,7 +16,7 @@ class RpcCalled
         protected string $method,
         protected array  $params,
         protected mixed  $id = null,
-        protected string $jsonrpc = '2.0'
+        protected string $jsonRpc = '2.0'
     )
     {
     }
