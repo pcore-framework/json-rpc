@@ -53,4 +53,14 @@ class Client
         return $this->client->request($requestMethod, '/', ['json' => $request]);
     }
 
+    /**
+     * @param Request $request
+     * @param string $requestMethod
+     * @return void
+     */
+    public function notify(Request $request, string $requestMethod = 'GET'): void
+    {
+        $this->sendRequest($request, $requestMethod);
+    }
+
 }
