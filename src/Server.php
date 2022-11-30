@@ -7,7 +7,6 @@ namespace PCore\JsonRpc;
 use BadMethodCallException;
 use InvalidArgumentException;
 use PCore\Di\Reflection;
-use PCore\HttpMessage\Contracts\HeaderInterface;
 use PCore\HttpMessage\Response as PsrResponse;
 use PCore\HttpMessage\Stream\StandardStream;
 use PCore\JsonRpc\Messages\{Error, Request, Response as RpcResponse};
@@ -44,14 +43,12 @@ class Server
             $result = call($service, $rpcRequest->getParams());
             $psrResponse = new PsrResponse();
             if ($rpcRequest->hasId()) {
-                $psrResponse = $psrResponse->withHeader(
-                    HeaderInterface::HEADER_CONTENT_TYPE,
-                    'application/json; charset=utf-8'
-                )->withBody(StandardStream::create(json_encode([
-                    'jsonrpc' => $rpcRequest->getJsonRpc(),
-                    'result' => $result,
-                    'id' => $rpcRequest->getId()
-                ])));
+                $psrResponse = $psrResponse->withHeader('Content-Type', 'application/json; charset=utf-8')
+                    ->withBody(StandardStream::create(json_encode([
+                        'jsonrpc' => $rpcRequest->getJsonRpc(),
+                        'result' => $result,
+                        'id' => $rpcRequest->getId()
+                    ])));
             }
             return $psrResponse;
         } catch (Throwable $e) {
@@ -66,10 +63,8 @@ class Server
                         'trace' => $e->getTrace()
                     ])
                 );
-                $psrResponse = $psrResponse->withHeader(
-                    HeaderInterface::HEADER_CONTENT_TYPE,
-                    'application/json; charset=utf-8'
-                )->withBody(StandardStream::create(json_encode($rpcResponse, JSON_UNESCAPED_UNICODE)));
+                $psrResponse = $psrResponse->withHeader('Content-Type', 'application/json; charset=utf-8')
+                    ->withBody(StandardStream::create(json_encode($rpcResponse, JSON_UNESCAPED_UNICODE)));
             }
             return $psrResponse;
         }

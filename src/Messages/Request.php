@@ -40,7 +40,7 @@ class Request implements JsonSerializable
      */
     public static function createFromPsrRequest(ServerRequestInterface $request): static
     {
-        if (!str_contains($request->getHeaderLine(HeaderInterface::HEADER_CONTENT_TYPE), 'application/json')) {
+        if (!str_contains($request->getHeaderLine('Content-Type'), 'application/json')) {
             throw new InvalidArgumentException('Неверный запрос', -32600);
         }
         $body = $request->getBody()->getContents();
