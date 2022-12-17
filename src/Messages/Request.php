@@ -43,8 +43,9 @@ class Request implements JsonSerializable
         if (!str_contains($request->getHeaderLine('Content-Type'), 'application/json')) {
             throw new InvalidArgumentException('Неверный запрос', -32600);
         }
-        $body = $request->getBody()->getContents();
-        $parts = json_decode($body, true);
+//        $body = $request->getBody()->getContents();
+//        $parts = json_decode($body, true);
+        $parts = $request->getParsedBody();
         if (!isset($parts['jsonrpc'], $parts['method'])) {
             throw new InvalidArgumentException('Ошибка синтаксического анализа', -32700);
         }
